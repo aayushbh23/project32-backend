@@ -1,20 +1,65 @@
+# import os
+# import environ
+# from pathlib import Path
+
+# # Initialize environment variables
+# env = environ.Env(
+#     DEBUG=(bool, False)
+# )
+# environ.Env.read_env(env_file=os.path.join(
+#     Path(__file__).resolve().parent.parent, '.env'))
+
+# BASE_DIR = Path(__file__).resolve().parent.parent.parent
+
+# SECRET_KEY = env('SECRET_KEY')
+
+# DEBUG = env('DEBUG')
+
+# ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
+# project32/settings/base.py
+from pathlib import Path
 import os
 import environ
-from pathlib import Path
+from django.core.exceptions import ImproperlyConfigured
+from django.core.management.utils import get_random_secret_key
 
-# Initialize environment variables
-env = environ.Env(
-    DEBUG=(bool, False)
-)
-environ.Env.read_env(env_file=os.path.join(Path(__file__).resolve().parent.parent, '.env'))
+# Folder containing manage.py
+BASE_DIR = Path(__file__).resolve().parents[2]   # -> <repo>/project32-backend
+ENV_PATH = BASE_DIR / ".env"
 
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
+# Initialise env reader
+env = environ.Env()
 
-SECRET_KEY = env('SECRET_KEY')
+# Load .env if present
+if ENV_PATH.exists():
+    # some versions prefer str(path)
+    environ.Env.read_env(str(ENV_PATH))
 
-DEBUG = env('DEBUG')
+# Helpful debug prints (only on first import)
+print("[settings] BASE_DIR:", BASE_DIR)
+print("[settings] .env exists:", ENV_PATH.exists())
+print("[settings] DJANGO_SETTINGS_MODULE:",
+      os.getenv("DJANGO_SETTINGS_MODULE"))
 
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
+# Debug defaults ON if not set; you can override in dev/prod modules
+DEBUG = env.bool("DEBUG", default=True)
+
+# In dev (DEBUG=True), fall back to a generated key to avoid crashes.
+# In prod (DEBUG=False), SECRET_KEY must be present, else raise.
+SECRET_KEY = env("SECRET_KEY", default=None)
+if not SECRET_KEY:
+    if DEBUG:
+        SECRET_KEY = "dev-" + get_random_secret_key()
+        print("[settings] Using generated DEV SECRET_KEY (ok for local dev).")
+    else:
+        raise ImproperlyConfigured("Set the SECRET_KEY environment variable")
+
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["localhost", "127.0.0.1"])
+
+# ---- upto here
+
+# Custom User model
+AUTH_USER_MODEL = 'users.User'
 
 # Application definition
 INSTALLED_APPS = [
@@ -24,6 +69,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'users.apps.UsersConfig',
     # Third-party apps
     'rest_framework',
     'rest_framework.authtoken',
@@ -36,7 +82,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.github',
     # Local apps
-    'users',
+    # 'users',
     'authentication',
 ]
 
@@ -51,6 +97,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -90,15 +137,13 @@ DATABASES = {
     }
 }
 
-# Custom User model
-AUTH_USER_MODEL = 'users.User'
-
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
-    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',},
-    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator','OPTIONS': {'min_length': 8}},
-    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',},
-    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator', },
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {'min_length': 8}},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator', },
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator', },
 ]
 
 # Internationalization
@@ -151,10 +196,12 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
 )
-ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
-ACCOUNT_EMAIL_REQUIRED = True
+# ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
+# ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_LOGIN_METHODS = {"email", "username"}
+ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*"]
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
-ACCOUNT_USERNAME_REQUIRED = False
+# ACCOUNT_USERNAME_REQUIRED = False
 LOGIN_REDIRECT_URL = '/dashboard/'
 LOGOUT_REDIRECT_URL = '/'
 SOCIALACCOUNT_PROVIDERS = {

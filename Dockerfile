@@ -19,8 +19,10 @@ RUN pip install -r requirements.txt
 # Copy project code
 COPY . /app/
 
-# Collect static files
-RUN python manage.py collectstatic --noinput
+# Entrypoint (handles migrate + optional collectstatic)
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
 
 # Expose port
 EXPOSE 8000
