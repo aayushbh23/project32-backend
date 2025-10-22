@@ -83,6 +83,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.github',
     # Local apps
     # 'users',
+    'core',
     'authentication',
 ]
 
