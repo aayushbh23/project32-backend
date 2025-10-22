@@ -1,22 +1,3 @@
-# import os
-# import environ
-# from pathlib import Path
-
-# # Initialize environment variables
-# env = environ.Env(
-#     DEBUG=(bool, False)
-# )
-# environ.Env.read_env(env_file=os.path.join(
-#     Path(__file__).resolve().parent.parent, '.env'))
-
-# BASE_DIR = Path(__file__).resolve().parent.parent.parent
-
-# SECRET_KEY = env('SECRET_KEY')
-
-# DEBUG = env('DEBUG')
-
-# ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
-# project32/settings/base.py
 from pathlib import Path
 import os
 import environ
@@ -70,10 +51,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'users.apps.UsersConfig',
+    'authentication',
+    'core',
     # Third-party apps
     'rest_framework',
     'rest_framework.authtoken',
     'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
     'django.contrib.sites',
     'allauth',
@@ -83,8 +67,6 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.github',
     # Local apps
     # 'users',
-    'core',
-    'authentication',
 ]
 
 SITE_ID = 1
@@ -199,10 +181,12 @@ AUTHENTICATION_BACKENDS = (
 )
 # ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
 # ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_LOGIN_METHODS = {"email", "username"}
-ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*"]
-ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
-# ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_LOGIN_METHODS = {"email"}
+ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*", "first_name*", "last_name*"]
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+# ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+ACCOUNT_EMAIL_VERIFICATION = 'optional'
+# ACCOUNT_EMAIL_REQUIRED = True
 LOGIN_REDIRECT_URL = '/dashboard/'
 LOGOUT_REDIRECT_URL = '/'
 SOCIALACCOUNT_PROVIDERS = {

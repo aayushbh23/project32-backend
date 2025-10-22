@@ -10,29 +10,27 @@ class UserAdmin(BaseUserAdmin):
     Admin for the custom User model (email as username).
     """
     ordering = ("email",)
-    list_display = ("id", "email", "username", "display_name",
-                    "is_staff", "is_active", "date_joined")
+    list_display = ("id", "email", "first_name", "last_name", "is_staff", "is_active", "date_joined")
     list_filter = ("is_staff", "is_active", "is_superuser", "groups")
-    search_fields = ("email", "username", "display_name",
-                     "first_name", "last_name")
+    search_fields = ("email", "first_name", "last_name")
 
     readonly_fields = ("date_joined", "last_login")
 
     fieldsets = (
         (None, {"fields": ("email", "password")}),
-        (_("Personal info"), {"fields": ("username",
-                                         "display_name", "first_name", "last_name")}),
-        (_("Permissions"), {"fields": ("is_active", "is_staff",
-                                       "is_superuser", "groups", "user_permissions")}),
+        (_("Personal info"), {"fields": ("first_name", "last_name")}),
+        (_("Permissions"), {"fields": ("is_active", "is_staff", "is_superuser", "groups", "user_permissions")}),
         (_("Important dates"), {"fields": ("last_login", "date_joined")}),
     )
 
     add_fieldsets = (
         (None, {
             "classes": ("wide",),
-            "fields": ("email", "username", "password1", "password2"),
+            "fields": ("email", "first_name", "last_name", "password1", "password2", "is_staff", "is_active"),
         }),
     )
+    # Remove username related stuff
+    filter_horizontal = ('groups', 'user_permissions',)
 
     def get_form(self, request, obj=None, **kwargs):
         """

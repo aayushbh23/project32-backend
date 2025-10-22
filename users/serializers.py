@@ -8,15 +8,14 @@ User = get_user_model()
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'email', 'username',
-                  'display_name', 'first_name', 'last_name']
+        fields = ['id', 'email', 'first_name', 'last_name']
         read_only_fields = ['id', 'email']
 
 
 class UserUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['username', 'display_name', 'first_name', 'last_name']
+        fields = ['first_name', 'last_name']
 
 
 class ChangePasswordSerializer(serializers.Serializer):
