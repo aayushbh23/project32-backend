@@ -10,8 +10,9 @@ def test_register_and_login():
     # Test registration
     resp = client.post(reverse('register'), {
         'email': 'new@example.com',
-        'username': 'newuser',
-        'password': 'StrongPass123!'
+        'password': 'StrongPass123!',
+        'first_name': 'firstName',
+        'last_name': 'last_name'
     })
     assert resp.status_code == 201
 
