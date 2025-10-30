@@ -5,10 +5,6 @@ import datetime
 
 
 class HealthCheckView(APIView):
-    """
-    A lightweight endpoint to verify that the API server is running.
-    It does NOT touch the database or require authentication.
-    """
 
     permission_classes = [AllowAny]
 

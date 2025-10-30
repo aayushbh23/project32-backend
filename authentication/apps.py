@@ -7,6 +7,4 @@ class AuthenticationConfig(AppConfig):
     verbose_name = "Authentication"
 
     def ready(self):
-        # Place for auth-related signals (e.g., post-save hooks).
-        # from . import signals  # noqa: F401
         pass

@@ -7,5 +7,4 @@ def test_health(client):
     resp = client.get(url)
     assert resp.status_code == 200
     data = resp.json()
-    # adapt to your actual payload
     assert data.get("status") in {"ok", "healthy", "up"}

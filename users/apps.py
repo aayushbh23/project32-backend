@@ -7,6 +7,4 @@ class UsersConfig(AppConfig):
     verbose_name = "Users"
 
     def ready(self):
-        # Place for signals import if/when needed.
-        # from . import signals  # noqa: F401
         pass

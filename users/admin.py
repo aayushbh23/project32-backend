@@ -6,9 +6,7 @@ from .models import User
 
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
-    """
-    Admin for the custom User model (email as username).
-    """
+
     ordering = ("email",)
     list_display = ("id", "email", "first_name", "last_name", "is_staff", "is_active", "date_joined")
     list_filter = ("is_staff", "is_active", "is_superuser", "groups")
@@ -29,13 +27,11 @@ class UserAdmin(BaseUserAdmin):
             "fields": ("email", "first_name", "last_name", "password1", "password2", "is_staff", "is_active"),
         }),
     )
-    # Remove username related stuff
+
     filter_horizontal = ('groups', 'user_permissions',)
 
     def get_form(self, request, obj=None, **kwargs):
-        """
-        Ensure email is required in the admin create/edit form.
-        """
+
         form = super().get_form(request, obj, **kwargs)
         if "email" in form.base_fields:
             form.base_fields["email"].required = True
